@@ -165,6 +165,21 @@ int load_from_usb(unsigned *_len)
 	return 0;
 }
 
+static void bootconfig_init(void)
+{
+	// OMAP4 TRM 520f
+	writel(0x4A326A0C, 0x4A326A00);
+	writel(0xCF00AA01, 0x4A326A0C);
+	writel(0x0000000C, 0x4A326A10);
+	writew(0x0000, 0x4A326A14);
+	writew(0x0045, 0x4A326A16); // USB
+	writew(0x0005, 0x4A326A18); // MMC1
+	writew(0x0000, 0x4A326A1C);
+	writew(0x0000, 0x4A326A20);
+
+	serial_puts("inited software boot configuration\n");
+}
+
 void aboot(unsigned *info)
 {
 	unsigned bootdevice, n, len;
@@ -213,6 +228,8 @@ void aboot(unsigned *info)
 		for (;;) ;
 	}
 #endif
+
+	bootconfig_init();
 
 	if (n) {
 		serial_puts("*** IO ERROR ***\n");
