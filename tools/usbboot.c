@@ -175,8 +175,15 @@ int main(int argc, char **argv)
 
 	for (;;) {
 		usb = usb_open(match_omap4_bootloader);
-		if (usb)
+		if (usb) {
+			free(data2);
+			data2 = load_file(argv[1], &sz2);
+			if (data2 == 0) {
+				fprintf(stderr,"cannot load '%s'\n", argv[1]);
+				return -1;
+			}
 			return usb_boot(usb, data, sz, data2, sz2);
+		}
 		if (once) {
 			once = 0;
 			fprintf(stderr,"waiting for OMAP44xx device...\n");
